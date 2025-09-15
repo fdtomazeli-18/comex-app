@@ -1,33 +1,40 @@
 package br.com.alura.comex.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
+@Table(name = "produto")
 @Getter
 @Setter
 public class Produto {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(min = 2)
     private String nome;
+    
     private String descricao;
 
-    private double preco;
-    private List<Categoria> categorias = new ArrayList<>();
-
-
-    public void adicionaCategoria(Categoria categoria) {
-        // verifica se a categoria já foi adicionada com base no id
-        for (Categoria categoriaDaLista : categorias) {
-            if (categoriaDaLista.getId().equals(categoria.getId())) {
-                return;
-            }
-        }
-
-        this.categorias.add(categoria);
-    }
+    @NotNull
+    @Positive
+    @Column(name = "preco")
+    private Double preco;
+    
+    @NotNull
+    @Min(0)
+    @Column(name = "quantidade_estoque")
+    private Integer quantidadeEstoque;
+    
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    @NotNull
+    private Categoria categoria;
 
     @Override
     public String toString() {
@@ -36,7 +43,8 @@ public class Produto {
                 ", nome='" + nome + '\'' +
                 ", descricao='" + descricao + '\'' +
                 ", preco=" + preco +
-                ", categorias=" + categorias +
+                ", quantidadeEstoque=" + quantidadeEstoque +
+                ", categoria=" + categoria +
                 '}';
     }
 }

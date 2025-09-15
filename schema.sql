@@ -18,7 +18,8 @@ drop table if exists categoria;
 
 create table categoria (
 id BIGSERIAL primary key,
-nome varchar(100)
+nome varchar(100),
+status varchar(20) default 'ATIVA'
 );
 
 
@@ -28,14 +29,9 @@ create table produto (
     id BIGSERIAL primary key,
     nome varchar(100),
     preco decimal(10,2),
-    descricao varchar(1000)
-);
-
-create table categoria_produto (
-    id BIGSERIAL primary key,
+    descricao varchar(1000),
+    quantidade_estoque integer not null,
     categoria_id bigint not null,
-    produto_id bigint not null,
-
-    foreign key (categoria_id) references categoria (id),
-    foreign key (produto_id) references produto (id)
-)
+    
+    foreign key (categoria_id) references categoria (id)
+);
