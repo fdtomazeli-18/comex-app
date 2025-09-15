@@ -1,10 +1,11 @@
 package br.com.alura.comex.service;
 
-import br.com.alura.comex.dto.CategoriaResponseDto;
 import br.com.alura.comex.dto.ProdutoCreateDto;
 import br.com.alura.comex.dto.ProdutoResponseDto;
 import br.com.alura.comex.exception.EntidadeNaoEncontradaException;
+import br.com.alura.comex.mapper.ProdutoMapper;
 import br.com.alura.comex.model.*;
+import lombok.extern.slf4j.Slf4j;
 import br.com.alura.comex.repository.CategoriaRepository;
 import br.com.alura.comex.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProdutoService {
 
@@ -20,50 +22,43 @@ public class ProdutoService {
     
     @Autowired
     private CategoriaRepository categoriaRepository;
+    
+    @Autowired
+    private ProdutoMapper produtoMapper;
 
     public ProdutoResponseDto criar(ProdutoCreateDto dto) {
+        log.info("Criando produto: {} para categoria ID: {}", dto.getNome(), dto.getCategoriaId());
+        
         Categoria categoria = categoriaRepository.findByIdAndAtivo(dto.getCategoriaId(), true)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada ou inativa com ID: " + dto.getCategoriaId()));
+                .orElseThrow(() -> {
+                    log.warn("Categoria não encontrada ou inativa com ID: {}", dto.getCategoriaId());
+                    return new EntidadeNaoEncontradaException("Categoria não encontrada ou inativa com ID: " + dto.getCategoriaId());
+                });
         
-        Produto produto = new Produto();
-        produto.setNome(dto.getNome());
-        produto.setDescricao(dto.getDescricao());
-        produto.setPreco(dto.getPreco());
-        produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
-        produto.setCategoria(categoria);
-        
+        Produto produto = produtoMapper.toEntity(dto, categoria);
         Produto salvo = produtoRepository.save(produto);
-        return toResponseDto(salvo);
+        
+        log.info("Produto criado com sucesso. ID: {}", salvo.getId());
+        return produtoMapper.toResponseDto(salvo);
     }
 
 
 
     public List<ProdutoResponseDto> listarTodos() {
+        log.info("Listando todos os produtos ativos");
         return produtoRepository.findByAtivo(true).stream()
-                .map(this::toResponseDto)
+                .map(produtoMapper::toResponseDto)
                 .toList();
     }
 
     public ProdutoResponseDto buscarPorId(Long id) {
+        log.info("Buscando produto por ID: {}", id);
         Produto produto = produtoRepository.findByIdAndAtivo(id, true)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado com ID: " + id));
-        return toResponseDto(produto);
+                .orElseThrow(() -> {
+                    log.warn("Produto não encontrado com ID: {}", id);
+                    return new EntidadeNaoEncontradaException("Produto não encontrado com ID: " + id);
+                });
+        return produtoMapper.toResponseDto(produto);
     }
-    
-    private ProdutoResponseDto toResponseDto(Produto produto) {
-        ProdutoResponseDto dto = new ProdutoResponseDto();
-        dto.setId(produto.getId());
-        dto.setNome(produto.getNome());
-        dto.setDescricao(produto.getDescricao());
-        dto.setPreco(produto.getPreco());
-        dto.setQuantidadeEstoque(produto.getQuantidadeEstoque());
-        
-        CategoriaResponseDto categoriaDto = new CategoriaResponseDto();
-        categoriaDto.setId(produto.getCategoria().getId());
-        categoriaDto.setNome(produto.getCategoria().getNome());
-        categoriaDto.setAtivo(produto.getCategoria().isAtivo());
-        dto.setCategoria(categoriaDto);
-        
-        return dto;
-    }
+
 }

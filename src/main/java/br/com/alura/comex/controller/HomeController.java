@@ -13,6 +13,6 @@ public class HomeController {
 
     @GetMapping("/status")
     public String status() {
-        return "✅ Porta 8090";
+        return "✅ Porta 8091";
     }
 }
