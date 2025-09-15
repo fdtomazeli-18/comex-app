@@ -35,6 +35,9 @@ public class Produto {
     @JoinColumn(name = "categoria_id")
     @NotNull
     private Categoria categoria;
+    
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ATIVO;
 
     @Override
     public String toString() {

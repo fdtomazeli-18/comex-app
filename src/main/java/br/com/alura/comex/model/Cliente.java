@@ -1,12 +1,17 @@
 package br.com.alura.comex.model;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
+@Table(name = "cliente")
 @Getter
 @Setter
 public class Cliente {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String cpf;
@@ -16,9 +21,12 @@ public class Cliente {
     private String logradouro;
     private String bairro;
     private String cidade;
+    @Column(name = "uf")
     private String estado;
     private String cep;
-
+    
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ATIVO;
 
     @Override
     public String toString() {
@@ -33,6 +41,7 @@ public class Cliente {
                 ", cidade='" + cidade + '\'' +
                 ", estado='" + estado + '\'' +
                 ", cep='" + cep + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

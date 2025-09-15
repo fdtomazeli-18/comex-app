@@ -9,7 +9,8 @@ create table cliente (
     bairro varchar(100),
     cidade varchar(50),
     uf char(2),
-    cep char(9)
+    cep char(9),
+    status varchar(20) default 'ATIVO'
 );
 
 
@@ -32,6 +33,7 @@ create table produto (
     descricao varchar(1000),
     quantidade_estoque integer not null,
     categoria_id bigint not null,
+    status varchar(20) default 'ATIVO',
     
     foreign key (categoria_id) references categoria (id)
 );

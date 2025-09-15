@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoriaRequestDto {
+public class CategoriaCreateDto {
     
     @NotBlank
     @Size(min = 2)

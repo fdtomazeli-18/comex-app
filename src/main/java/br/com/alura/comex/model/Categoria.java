@@ -21,7 +21,7 @@ public class Categoria {
     private String nome;
     
     @Enumerated(EnumType.STRING)
-    private StatusCategoria status = StatusCategoria.ATIVA;
+    private Status status = Status.ATIVO;
 
     @Override
     public String toString() {

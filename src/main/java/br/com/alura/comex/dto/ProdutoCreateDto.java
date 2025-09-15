@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProdutoRequestDto {
+public class ProdutoCreateDto {
     
     @NotBlank
     @Size(min = 2)
