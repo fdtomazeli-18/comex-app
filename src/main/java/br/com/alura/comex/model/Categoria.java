@@ -20,15 +20,14 @@ public class Categoria {
     @Size(min = 2)
     private String nome;
     
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.ATIVO;
+    private boolean ativo = true;
 
     @Override
     public String toString() {
         return "Categoria{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", status=" + status +
+                ", ativo=" + ativo +
                 '}';
     }
 }

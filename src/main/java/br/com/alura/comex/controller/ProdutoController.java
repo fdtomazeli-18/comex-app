@@ -2,9 +2,12 @@ package br.com.alura.comex.controller;
 
 import br.com.alura.comex.dto.ProdutoCreateDto;
 import br.com.alura.comex.dto.ProdutoResponseDto;
+import br.com.alura.comex.response.ApiResponse;
 import br.com.alura.comex.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,17 +20,21 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping
-    public ProdutoResponseDto cadastrar(@Valid @RequestBody ProdutoCreateDto dto) {
-        return produtoService.criar(dto);
+    public ResponseEntity<ApiResponse<ProdutoResponseDto>> cadastrar(@Valid @RequestBody ProdutoCreateDto dto) {
+        ProdutoResponseDto produto = produtoService.criar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Produto criado com sucesso", produto));
     }
 
     @GetMapping
-    public List<ProdutoResponseDto> listar() {
-        return produtoService.listarTodos();
+    public ResponseEntity<ApiResponse<List<ProdutoResponseDto>>> listar() {
+        List<ProdutoResponseDto> produtos = produtoService.listarTodos();
+        return ResponseEntity.ok(ApiResponse.success("Produtos listados com sucesso", produtos));
     }
 
     @GetMapping("/{id}")
-    public ProdutoResponseDto buscarPorId(@PathVariable Long id) {
-        return produtoService.buscarPorId(id);
+    public ResponseEntity<ApiResponse<ProdutoResponseDto>> buscarPorId(@PathVariable Long id) {
+        ProdutoResponseDto produto = produtoService.buscarPorId(id);
+        return ResponseEntity.ok(ApiResponse.success("Produto encontrado", produto));
     }
 }

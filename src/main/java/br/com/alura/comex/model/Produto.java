@@ -36,8 +36,7 @@ public class Produto {
     @NotNull
     private Categoria categoria;
     
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.ATIVO;
+    private boolean ativo = true;
 
     @Override
     public String toString() {

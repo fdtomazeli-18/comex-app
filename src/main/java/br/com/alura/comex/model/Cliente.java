@@ -23,10 +23,10 @@ public class Cliente {
     private String cidade;
     @Column(name = "uf")
     private String estado;
+    @Column(length = 9)
     private String cep;
     
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.ATIVO;
+    private boolean ativo = true;
 
     @Override
     public String toString() {
@@ -41,7 +41,7 @@ public class Cliente {
                 ", cidade='" + cidade + '\'' +
                 ", estado='" + estado + '\'' +
                 ", cep='" + cep + '\'' +
-                ", status=" + status +
+                ", ativo=" + ativo +
                 '}';
     }
 }

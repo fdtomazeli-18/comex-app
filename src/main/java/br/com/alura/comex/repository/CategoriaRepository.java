@@ -1,7 +1,7 @@
 package br.com.alura.comex.repository;
 
 import br.com.alura.comex.model.Categoria;
-import br.com.alura.comex.model.Status;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     
-    List<Categoria> findByStatus(Status status);
+    List<Categoria> findByAtivo(boolean ativo);
     
-    Optional<Categoria> findByIdAndStatus(Long id, Status status);
+    Optional<Categoria> findByIdAndAtivo(Long id, boolean ativo);
+    
+    boolean existsByNomeAndAtivo(String nome, boolean ativo);
 }

@@ -3,6 +3,7 @@ package br.com.alura.comex.service;
 import br.com.alura.comex.dto.CategoriaResponseDto;
 import br.com.alura.comex.dto.ProdutoCreateDto;
 import br.com.alura.comex.dto.ProdutoResponseDto;
+import br.com.alura.comex.exception.EntidadeNaoEncontradaException;
 import br.com.alura.comex.model.*;
 import br.com.alura.comex.repository.CategoriaRepository;
 import br.com.alura.comex.repository.ProdutoRepository;
@@ -21,8 +22,8 @@ public class ProdutoService {
     private CategoriaRepository categoriaRepository;
 
     public ProdutoResponseDto criar(ProdutoCreateDto dto) {
-        Categoria categoria = categoriaRepository.findByIdAndStatus(dto.getCategoriaId(), Status.ATIVO)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada ou inativa"));
+        Categoria categoria = categoriaRepository.findByIdAndAtivo(dto.getCategoriaId(), true)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada ou inativa com ID: " + dto.getCategoriaId()));
         
         Produto produto = new Produto();
         produto.setNome(dto.getNome());
@@ -38,15 +39,15 @@ public class ProdutoService {
 
 
     public List<ProdutoResponseDto> listarTodos() {
-        return produtoRepository.findByStatus(Status.ATIVO).stream()
+        return produtoRepository.findByAtivo(true).stream()
                 .map(this::toResponseDto)
                 .toList();
     }
 
     public ProdutoResponseDto buscarPorId(Long id) {
-        return produtoRepository.findByIdAndStatus(id, Status.ATIVO)
-                .map(this::toResponseDto)
-                .orElse(null);
+        Produto produto = produtoRepository.findByIdAndAtivo(id, true)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado com ID: " + id));
+        return toResponseDto(produto);
     }
     
     private ProdutoResponseDto toResponseDto(Produto produto) {
@@ -60,7 +61,7 @@ public class ProdutoService {
         CategoriaResponseDto categoriaDto = new CategoriaResponseDto();
         categoriaDto.setId(produto.getCategoria().getId());
         categoriaDto.setNome(produto.getCategoria().getNome());
-        categoriaDto.setStatus(produto.getCategoria().getStatus());
+        categoriaDto.setAtivo(produto.getCategoria().isAtivo());
         dto.setCategoria(categoriaDto);
         
         return dto;

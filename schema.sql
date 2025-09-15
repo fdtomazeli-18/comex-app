@@ -10,7 +10,7 @@ create table cliente (
     cidade varchar(50),
     uf char(2),
     cep char(9),
-    status varchar(20) default 'ATIVO'
+    ativo boolean default true
 );
 
 
@@ -20,7 +20,7 @@ drop table if exists categoria;
 create table categoria (
 id BIGSERIAL primary key,
 nome varchar(100),
-status varchar(20) default 'ATIVA'
+ativo boolean default true
 );
 
 
@@ -33,7 +33,7 @@ create table produto (
     descricao varchar(1000),
     quantidade_estoque integer not null,
     categoria_id bigint not null,
-    status varchar(20) default 'ATIVO',
+    ativo boolean default true,
     
     foreign key (categoria_id) references categoria (id)
 );
