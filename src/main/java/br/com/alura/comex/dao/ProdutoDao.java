@@ -70,7 +70,9 @@ public class ProdutoDao {
 
     public List<Produto> listaTodos() {
         String sql = """
-                select produto.*, categoria.*
+                select produto.id as produto_id, produto.nome as produto_nome, 
+                       produto.descricao as produto_descricao, produto.preco as produto_preco,
+                       categoria.id as categoria_id, categoria.nome as categoria_nome
                   from produto
                   left join categoria_produto on produto.id = categoria_produto.produto_id
                   left join categoria on categoria_produto.categoria_id = categoria.id
@@ -83,14 +85,14 @@ public class ProdutoDao {
             Produto produto = null;
 
             while (resultSet.next()) {
-                Long produtoId = resultSet.getLong("produtos.id");
+                Long produtoId = resultSet.getLong("produto_id");
 
                 if (produto == null || !produto.getId().equals(produtoId)) {
                     produto = montaProduto(resultSet);
                     produtos.add(produto);
                 }
 
-                Long categoriaId = resultSet.getLong("categoria.id");
+                Long categoriaId = resultSet.getLong("categoria_id");
                 if (!resultSet.wasNull()) {
                     Categoria categoria = monta(categoriaId, resultSet);
 
@@ -168,17 +170,17 @@ public class ProdutoDao {
     private Categoria monta(Long categoriaId, ResultSet resultSet) throws SQLException {
         Categoria categoria = new Categoria();
         categoria.setId(categoriaId);
-        categoria.setNome(resultSet.getString("categoria.nome"));
+        categoria.setNome(resultSet.getString("categoria_nome"));
 
         return categoria;
     }
 
     private Produto montaProduto(ResultSet resultSet) throws SQLException {
         Produto produto = new Produto();
-        produto.setId(resultSet.getLong("produto.id"));
-        produto.setNome(resultSet.getString("produto.nome"));
-        produto.setDescricao(resultSet.getString("produto.descricao"));
-        produto.setPreco(resultSet.getDouble("produto.preco"));
+        produto.setId(resultSet.getLong("produto_id"));
+        produto.setNome(resultSet.getString("produto_nome"));
+        produto.setDescricao(resultSet.getString("produto_descricao"));
+        produto.setPreco(resultSet.getDouble("produto_preco"));
 
         return produto;
     }
