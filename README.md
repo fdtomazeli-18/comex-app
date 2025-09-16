@@ -1,33 +1,125 @@
-# Desafio - Sistema de Gerenciamento de Produtos e Clientes 🛒
+# Sistema Comex - API de Gerenciamento de Produtos e Categorias 🛒
 
-## 🎯 Objetivo
-Desenvolver um sistema de gerenciamento de produtos e clientes em Java, aplicando **Orientação a Objetos** e **Boas Práticas de Desenvolvimento**.
+Sistema desenvolvido em **Spring Boot** para gerenciamento de produtos e categorias com **CRUD completo**, **validações**, **soft delete** e **auditoria**.
 
-## 📝 Tarefas
+## 🎯 Tarefas Implementadas
 
-### 1. "Mavenizar" o Projeto
-Transforme o projeto em um projeto Maven para facilitar a gestão de dependências e o build do projeto.
+### ✅ **Tarefa 1: Endpoint POST /api/categorias**
 
-#### Passos:
-1. Crie um arquivo `pom.xml` na raiz do projeto.
-2. Adicione as dependências necessárias, como `h2 connector` e `junit`.
-3. Configure o plugin do Maven para compilar e testar o projeto.
+**Implementação:**
+- Endpoint: `POST /api/categorias`
+- Validações: Nome mínimo 2 caracteres
+- Status padrão: ATIVA (boolean `ativo = true`)
 
-### 2. Organizar o Projeto em Módulos
-Organize o projeto em módulos para melhorar a estrutura e a manutenção do código. Utilize o critério de agrupamento de código que achar mais coerente. Discuta com o professor na monitoria como podemos organizar um projeto seguindo *package by layer* e *package by feature*.
+**Exemplo de uso:**
+```json
+POST /api/categorias
+{
+  "nome": "Eletrônicos"
+}
+```
 
-### 3. Execute as Classes de Teste
-Execute as classes de teste (`Testa*`). Todas têm erro, e você deve implementar corretamente o tratamento de exceção.
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Categoria criada com sucesso",
+  "data": {
+    "id": 1,
+    "nome": "Eletrônicos",
+    "ativo": true
+  }
+}
+```
 
-#### Passos:
-1. Identifique os erros nas classes de teste (ou em outro ponto do projeto).
-2. Implemente o tratamento de exceção adequado.
-3. Garanta que todos os testes passem sem erros.
+### ✅ **Tarefa 2: Endpoint POST /api/produtos**
 
-### 4. Crie uma Exceção de Negócio
-Crie uma exceção de negócio e utilize-a quando uma entidade consultada por ID não for encontrada no banco de dados.
+**Implementação:**
+- Endpoint: `POST /api/produtos`
+- Validações: Nome mínimo 2 caracteres, preço positivo, categoria válida
+- Descrição opcional, demais campos obrigatórios
 
-#### Passos:
-1. Crie uma classe de exceção personalizada, por exemplo, `EntidadeNaoEncontradaException`.
-2. Lance essa exceção nos métodos de consulta por ID quando a entidade não for encontrada.
-3. Crie classes de teste para testar o lançamento correto da exceção.
+**Exemplo de uso:**
+```json
+POST /api/produtos
+{
+  "nome": "Smartphone",
+  "preco": 1500.00,
+  "descricao": "Smartphone Android",
+  "quantidadeEstoque": 10,
+  "categoriaId": 1
+}
+```
+
+### ✅ **Tarefa 3: CategoriaRepository com Spring Data JPA**
+
+**Implementação:**
+```java
+public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+    
+    // Query Methods - Spring Data gera automaticamente
+    List<Categoria> findByAtivo(boolean ativo);
+    Page<Categoria> findByAtivo(boolean ativo, Pageable pageable);
+    Optional<Categoria> findByIdAndAtivo(Long id, boolean ativo);
+    boolean existsByNomeAndAtivo(String nome, boolean ativo);
+}
+```
+
+**Vantagens:**
+- ✅ **Query Methods**: Spring Data gera SQL automaticamente
+- ✅ **Paginação**: Suporte nativo com `Pageable`
+- ✅ **Type Safety**: Métodos tipados e seguros
+
+### ✅ **Tarefa 4: ProdutoRepository com Spring Data JPA**
+
+**Implementação:**
+```java
+public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+    
+    // Query Methods automáticos
+    List<Produto> findByAtivo(boolean ativo);
+    Page<Produto> findByAtivo(boolean ativo, Pageable pageable);
+    Optional<Produto> findByIdAndAtivo(Long id, boolean ativo);
+}
+```
+
+## 🚀 Funcionalidades Extras
+
+- ✅ **CRUD Completo** - CREATE, READ, UPDATE, DELETE, REATIVAR
+- ✅ **Paginação** - Endpoints com suporte a paginação
+- ✅ **Padrão Mapper** - Conversões DTO ↔ Entity centralizadas
+- ✅ **Migrations Flyway** - Controle de versão do banco
+- ✅ **Auditoria JPA** - Campos createdAt/updatedAt automáticos
+- ✅ **Tratamento de Exceções** - GlobalExceptionHandler
+- ✅ **Testes Unitários** - JUnit 5 + Mockito
+- ✅ **Soft Delete** - Desativação com `ativo = false`
+- ✅ **Validações** - Bean Validation
+- ✅ **Logs Estruturados** - SLF4J
+- ✅ **Swagger** - Documentação automática da API
+
+## 🛠️ Tecnologias
+
+- **Spring Boot 3.5.5** + **Spring Data JPA** + **PostgreSQL**
+- **Flyway** + **Lombok** + **Swagger** + **JUnit 5** + **Mockito**
+
+## 🏃♂️ Como Executar
+
+1. **Configurar PostgreSQL:**
+   ```sql
+   CREATE DATABASE comex;
+   CREATE USER admin WITH PASSWORD 'admin';
+   ```
+
+2. **Executar:**
+   ```bash
+   mvn spring-boot:run
+   ```
+
+3. **Acessar:**
+   - API: `http://localhost:8091/api`
+   - Swagger: `http://localhost:8091/swagger-ui/index.html`
+
+4. **Testes:**
+   ```bash
+   mvn test
+   ```
