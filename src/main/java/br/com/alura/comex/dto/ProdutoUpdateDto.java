@@ -3,6 +3,7 @@ package br.com.alura.comex.dto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ public class ProdutoUpdateDto {
     
     @NotNull(message = "Preço é obrigatório")
     @Positive(message = "Preço deve ser positivo")
-    private Double preco;
+    private BigDecimal preco;
     
     @NotNull(message = "Quantidade em estoque é obrigatória")
     @Min(value = 0, message = "Quantidade em estoque não pode ser negativa")

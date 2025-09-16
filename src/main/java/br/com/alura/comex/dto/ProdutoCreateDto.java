@@ -3,6 +3,7 @@ package br.com.alura.comex.dto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ public class ProdutoCreateDto {
     
     @NotNull
     @Positive
-    private Double preco;
+    private BigDecimal preco;
     
     @NotNull
     @Min(0)

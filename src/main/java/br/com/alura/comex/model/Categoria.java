@@ -24,6 +24,7 @@ public class Categoria {
     
     @NotBlank
     @Size(min = 2)
+    @Column(length = 100)
     private String nome;
     
     private boolean ativo = true;
