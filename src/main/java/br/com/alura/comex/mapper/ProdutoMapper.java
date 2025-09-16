@@ -2,6 +2,7 @@ package br.com.alura.comex.mapper;
 
 import br.com.alura.comex.dto.ProdutoCreateDto;
 import br.com.alura.comex.dto.ProdutoResponseDto;
+import br.com.alura.comex.dto.ProdutoUpdateDto;
 import br.com.alura.comex.model.Categoria;
 import br.com.alura.comex.model.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,13 @@ public class ProdutoMapper {
         dto.setQuantidadeEstoque(produto.getQuantidadeEstoque());
         dto.setCategoria(categoriaMapper.toResponseDto(produto.getCategoria()));
         return dto;
+    }
+    
+    public void updateEntity(Produto produto, ProdutoUpdateDto dto, Categoria categoria) {
+        produto.setNome(dto.getNome());
+        produto.setDescricao(dto.getDescricao());
+        produto.setPreco(dto.getPreco());
+        produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
+        produto.setCategoria(categoria);
     }
 }

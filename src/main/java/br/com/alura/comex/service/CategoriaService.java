@@ -2,6 +2,7 @@ package br.com.alura.comex.service;
 
 import br.com.alura.comex.dto.CategoriaCreateDto;
 import br.com.alura.comex.dto.CategoriaResponseDto;
+import br.com.alura.comex.dto.CategoriaUpdateDto;
 import br.com.alura.comex.exception.CategoriaJaExisteException;
 import br.com.alura.comex.exception.EntidadeNaoEncontradaException;
 import br.com.alura.comex.mapper.CategoriaMapper;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Slf4j
 @Service
@@ -53,6 +56,65 @@ public class CategoriaService {
                     return new EntidadeNaoEncontradaException("Categoria não encontrada com ID: " + id);
                 });
         return categoriaMapper.toResponseDto(categoria);
+    }
+    
+    public Page<CategoriaResponseDto> listarComPaginacao(Pageable pageable) {
+        log.info("Listando categorias com paginação: {}", pageable);
+        return categoriaRepository.findByAtivo(true, pageable)
+                .map(categoriaMapper::toResponseDto);
+    }
+    
+    public CategoriaResponseDto atualizar(Long id, CategoriaUpdateDto dto) {
+        log.info("Atualizando categoria ID: {} com nome: {}", id, dto.getNome());
+        
+        Categoria categoria = categoriaRepository.findByIdAndAtivo(id, true)
+                .orElseThrow(() -> {
+                    log.warn("Categoria não encontrada para atualização com ID: {}", id);
+                    return new EntidadeNaoEncontradaException("Categoria não encontrada com ID: " + id);
+                });
+        
+        if (categoriaRepository.existsByNomeAndAtivo(dto.getNome(), true) && 
+            !categoria.getNome().equals(dto.getNome())) {
+            log.warn("Tentativa de atualizar para nome já existente: {}", dto.getNome());
+            throw new CategoriaJaExisteException("Categoria com nome '" + dto.getNome() + "' já existe");
+        }
+        
+        categoriaMapper.updateEntity(categoria, dto);
+        Categoria salva = categoriaRepository.save(categoria);
+        
+        log.info("Categoria atualizada com sucesso. ID: {}", salva.getId());
+        return categoriaMapper.toResponseDto(salva);
+    }
+    
+    public void deletar(Long id) {
+        log.info("Realizando soft delete da categoria ID: {}", id);
+        
+        Categoria categoria = categoriaRepository.findByIdAndAtivo(id, true)
+                .orElseThrow(() -> {
+                    log.warn("Categoria não encontrada para deleção com ID: {}", id);
+                    return new EntidadeNaoEncontradaException("Categoria não encontrada com ID: " + id);
+                });
+        
+        categoria.setAtivo(false);
+        categoriaRepository.save(categoria);
+        
+        log.info("Categoria desativada com sucesso. ID: {}", id);
+    }
+    
+    public CategoriaResponseDto reativar(Long id) {
+        log.info("Reativando categoria ID: {}", id);
+        
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Categoria não encontrada para reativação com ID: {}", id);
+                    return new EntidadeNaoEncontradaException("Categoria não encontrada com ID: " + id);
+                });
+        
+        categoria.setAtivo(true);
+        Categoria salva = categoriaRepository.save(categoria);
+        
+        log.info("Categoria reativada com sucesso. ID: {}", id);
+        return categoriaMapper.toResponseDto(salva);
     }
 
 
