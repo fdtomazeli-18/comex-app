@@ -22,27 +22,27 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 2)
+    @NotBlank(message = "Nome não pode ser nulo ou vazio")
+    @Size(min = 2, message = "Nome deve ter pelo menos 2 caracteres")
     @Column(length = 100)
     private String nome;
     
     @Column(length = 1000)
     private String descricao;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Preço é obrigatório")
+    @Positive(message = "Preço deve ser positivo")
     @Column(name = "preco", precision = 10, scale = 2)
     private BigDecimal preco;
     
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Quantidade em estoque é obrigatória")
+    @Min(value = 0, message = "Quantidade em estoque não pode ser negativa")
     @Column(name = "quantidade_estoque")
     private Integer quantidadeEstoque;
     
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    @NotNull
+    @NotNull(message = "Categoria é obrigatória")
     private Categoria categoria;
     
     private boolean ativo = true;
